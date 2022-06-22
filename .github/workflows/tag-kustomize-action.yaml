@@ -1,0 +1,56 @@
+name: release-action
+on:
+  workflow_call:
+    secrets:
+      aws-access-key-id:
+        required: true
+      aws-secret-access-key:
+        required: true
+      token:
+        required: true
+    inputs:
+      aws-region:
+        type: string
+        required: true
+      ecr-repository:
+        type: string
+        required: true
+      kustomize-repository:
+        type: string
+        required: true
+      kustomize-branch:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+      # https://github.community/t/reusable-workflow-with-strategy-matrix/205676
+      environments:
+        type: string
+        required: true
+
+jobs:
+
+  update-kustomize:
+    runs-on: [ "self-hosted", "builder" ]
+    strategy:
+      matrix:
+        environment: ${{fromJson(inputs.environments)}}
+    steps:
+      - name: Checkout Kustomize
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ inputs.kustomize-repository }}
+          token: ${{ secrets.TOKEN }}
+          ref: ${{ inputs.kustomize-branch }}
+
+      - name: Update Overlay
+        run: |
+          ls ${{ github.workspace }}
+          cd ${{ github.workspace }}/plattform/${{ inputs.ecr-repository }}/overlays/${{ matrix.environment }}
+          kustomize edit set image ${{ inputs.ecr-repository }}:${{ inputs.tag }}
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@hawk.ai"
+          git add .
+          git commit -m "Change Tag"
+          git push

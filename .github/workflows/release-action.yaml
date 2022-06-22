@@ -1,56 +1,52 @@
-name: release-action
+name: Release
+
 on:
-  workflow_call:
-    secrets:
-      aws-access-key-id:
-        required: true
-      aws-secret-access-key:
-        required: true
-      token:
-        required: true
+  workflow_dispatch:
     inputs:
-      aws-region:
-        type: string
-        required: true
-      ecr-repository:
-        type: string
-        required: true
-      kustomize-repository:
-        type: string
-        required: true
-      kustomize-branch:
-        type: string
-        required: true
       tag:
         type: string
+        description: Tag to be used in the next release
         required: true
-      # https://github.community/t/reusable-workflow-with-strategy-matrix/205676
       environments:
         type: string
+        description: Environments that this tags should be deployed to
+        required: true
+    secrets:
+      token:
+        required: true
+      AUTH0_DEV_API_CLIENT_SECRET:
+        required: true
+      AUTH0_PROD_API_CLIENT_SECRET:
         required: true
 
 jobs:
 
-  update-kustomize:
-    runs-on: [ "self-hosted", "builder" ]
+  release:
     strategy:
+      fail-fast: true
+      max-parallel: 2
       matrix:
         environment: ${{fromJson(inputs.environments)}}
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Kustomize
+      - name: Sync Argo CD
+        run: echo "Here we will refresh and sync Argo CD in the first environment"
+      - name: Checkout E2E-Tests repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ inputs.kustomize-repository }}
+          repository: hawk-ai-aml/end-to-end-tests.git
           token: ${{ secrets.TOKEN }}
-          ref: ${{ inputs.kustomize-branch }}
-
-      - name: Update Overlay
+          ref: master
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'adopt'
+      - name: "Quality Gate 1: Run end to end test"
+        env:
+          AUTH0_DEV_API_CLIENT_SECRET: ${{ secrets.AUTH0_DEV_API_CLIENT_SECRET }}
+          AUTH0_PROD_API_CLIENT_SECRET: ${{ secrets.AUTH0_PROD_API_CLIENT_SECRET }}
+          environment: "dev"
         run: |
-          ls ${{ github.workspace }}
-          cd ${{ github.workspace }}/plattform/${{ inputs.ecr-repository }}/overlays/${{ matrix.environment }}
-          kustomize edit set image ${{ inputs.ecr-repository }}:${{ inputs.tag }}
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions@hawk.ai"
-          git add .
-          git commit -m "Change Tag"
-          git push
+          ./gradlew :demo:clean :demo:assemble :demo:testClasses -isS
+          ./gradlew :demo:check -Denvironment=${{ matrix.environment }} -isS
