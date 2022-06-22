@@ -11,6 +11,10 @@ on:
         type: string
         description: Environments that this tags should be deployed to
         required: true
+      tests-repository:
+        type: string
+        description: The repository where the end to end tests are to be found
+        required: true
     secrets:
       token:
         required: true
@@ -34,7 +38,7 @@ jobs:
       - name: Checkout E2E-Tests repository
         uses: actions/checkout@v3
         with:
-          repository: hawk-ai-aml/end-to-end-tests.git
+          repository: ${{ inputs.tests-repository }}
           token: ${{ secrets.TOKEN }}
           ref: master
       - name: Set up JDK 11
