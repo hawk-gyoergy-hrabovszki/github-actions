@@ -55,10 +55,12 @@ jobs:
           ./gradlew :demo:clean :demo:assemble :demo:testClasses -isS
           ./gradlew :demo:check -Denvironment=${{ matrix.environment }} -isS
       - name: Copy test result file for upload to GitHub Artifactory
+        if: ${{ failure() }}
         run: |
           mkdir github-artifactory
           mv /home/runner/work/kustomize-cicd/kustomize-cicd/config/build/reports/tests/* github-artifactory
       - name: Upload test result file to GitHub Artifactory
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v2
         with:
           name: test-results
