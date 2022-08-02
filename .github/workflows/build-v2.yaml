@@ -125,39 +125,14 @@ jobs:
         name: Init Job
         uses: hawk-ai-aml/job-init@master
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - id: udpate-overlay
+        name: Update kustomize overlay
+        uses: hawk-ai-aml/kustomize-overlay-action@master
         with:
+          component-metadata: ${{ needs.init.outputs.metadata }}
+          component-overlay: ${{ matrix.overlay }}
+          component-tag: ${{ env.HAWK_IMAGE_TAG }}
+          kustomize-repo: hawk-ai-aml/kustomize2.git
+          kustomize-access-token: ${{ secrets.REPO_ACCESS_PAT }}
           aws-access-key-id: ${{ secrets.AWS_ORG_ECR_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_ORG_ECR_SECRET_ACCESS_KEY }}
-          aws-region: ${{ fromJson(needs.init.outputs.metadata).ecr.region }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registries: ${{ fromJson(needs.init.outputs.metadata).ecr.registry }}
-
-      # This is from bitbucket actually
-      - name: Checkout Kustomize
-        uses: actions/checkout@v3
-        with:
-          repository: hawk-ai-aml/kustomize2.git
-          ref: master
-          token: ${{ secrets.REPO_ACCESS_PAT }}
-          # ssh-key: ${{ secrets.KUSTOMIZE_DEPLOY_PRIVATE_KEY }}
-
-      - name: Update kustomize Overlay
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ fromJson(needs.init.outputs.metadata).ecr.repository }}
-          KUSTOMIZE_PATH: ${{ fromJson(needs.init.outputs.metadata).kustomize.path }}
-          OVERLAY: ${{ matrix.overlay }}
-        run: |
-          cd ${KUSTOMIZE_PATH}/overlays/${OVERLAY}
-          kustomize edit set image ${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ env.HAWK_IMAGE_TAG }}
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions@hawk.ai"
-          git add .
-          git commit -m "AUTOMATIC JENKINS COMMIT: Update ${KUSTOMIZE_PATH}/overlays/${OVERLAY} for ${ECR_REPOSITORY} to ${{ env.HAWK_IMAGE_TAG }}"
-          git push
