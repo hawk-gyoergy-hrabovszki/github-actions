@@ -1,0 +1,79 @@
+name: workflow-init
+description: Workflow Init Action
+
+inputs:
+  component:
+    description: "Component to retrieve metadata"
+    required: true
+  profile:
+    description: Metadata profile
+    required: false
+    default: hawk
+  skip-tests:
+    description: "Hint to skip tests"
+    required: false
+    default: "false"
+  update-kustomize:
+    description: "Hint to update kustomize"
+    required: false
+    default: "true"
+  overlays:
+    description: "Overlays to update"
+    required: false
+    default: dev
+
+outputs:
+  metadata:
+    description: 'repository metadata'
+    value: ${{ steps.vars.outputs.metadata }}
+
+  overlays:
+    description: 'repository overlays'
+    value: ${{ steps.vars.outputs.overlays }}
+
+  update-kustomize:
+    description: 'Hint to update kustomize'
+    value: ${{ steps.vars.outputs.update-kustomize }}
+
+  skip-tests:
+    description: 'Hint to skip tests'
+    value: ${{ steps.vars.outputs.skip-tests }}
+
+runs:
+  using: composite
+  steps:
+    - id: job-init
+      name: Init Job
+      uses: hawk-ai-aml/job-init@master
+
+    - id: vars
+      shell: bash
+      run: |
+        UPDATE_KUSTOMIZE=${{ inputs.kustomize }}
+        UPDATE_KUSTOMIZE=${UPDATE_KUSTOMIZE:-true}
+
+        KUSTOMIZE_OVERLAYS=${{ inputs.overlays }}
+        KUSTOMIZE_OVERLAYS=${KUSTOMIZE_OVERLAYS:-dev}
+
+        SKIP_TESTS=${{ inputs.skip-tests }}
+        SKIP_TESTS=${SKIP_TESTS:-false}
+
+        METADATA_JSON=$(yj -y < ${GITHUB_ACTION_PATH}/profile/${{ inputs.profile }}.yml | jq -cr --arg COMPONENT ${{ inputs.component }} '.component[$COMPONENT]')
+        OVERLAYS_JSON=$(yj -y < ${GITHUB_ACTION_PATH}/profile/${{ inputs.profile }}.yml | jq -cr --arg COMPONENT ${{ inputs.component }} --arg OVERLAYS ${KUSTOMIZE_OVERLAYS} '.component[$COMPONENT].kustomize.overlays[$OVERLAYS]')
+
+        cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+
+        [${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+
+        \`\`\`
+        metadata::${METADATA_JSON}
+        overlays::${OVERLAYS_JSON}
+        update-kustomize::${UPDATE_KUSTOMIZE}
+        skip-tests::${SKIP_TESTS}
+        \`\`\`
+        EOF
+
+        echo "::set-output name=metadata::${METADATA_JSON}"
+        echo "::set-output name=overlays::${OVERLAYS_JSON}"
+        echo "::set-output name=update-kustomize::${UPDATE_KUSTOMIZE}"
+        echo "::set-output name=skip-tests::${SKIP_TESTS}"

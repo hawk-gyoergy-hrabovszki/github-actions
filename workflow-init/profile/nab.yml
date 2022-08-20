@@ -1,0 +1,14 @@
+component:
+  audit-trail2:
+    ecr:
+      registry: "569345997196"
+      repository: hawk-audit-trail
+      region: us-east-1
+    kustomize:
+      path: plattform/utility/audit-trail 
+      overlays:
+        dev: []
+        test: []
+        qa: []
+        prod:
+          - nab-dev
