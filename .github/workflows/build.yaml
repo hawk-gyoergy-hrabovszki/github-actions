@@ -104,13 +104,13 @@ jobs:
           ./gradlew build -Dskip.tests=true -x test
           ./gradlew jibDockerBuild -DIMAGE_NAME="${ECR_REGISTRY}/${ECR_REPOSITORY}" -DTAG_COMMIT=${{ env.HAWK_IMAGE_TAG }}
 
-      - run: ls -a
+      - run: cd build && ls -a
 
       - name: Copy result files for upload to GitHub Artifact
         run: |
           pwd
           mkdir github-artifact
-          mv /home/runner/work/${{ inputs.component }}/${{ inputs.component }}/demo/build/reports/tests/* github-artifact
+          mv /home/runner/work/${{ inputs.component }}/${{ inputs.component }}/build/reports/tests/* github-artifact
       - name: Upload plain test results to GitHub Artifact
         uses: actions/upload-artifact@v2
         if: always()
