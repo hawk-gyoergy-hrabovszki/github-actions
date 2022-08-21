@@ -104,7 +104,7 @@ jobs:
           ./gradlew build -Dskip.tests=true -x test
           ./gradlew jibDockerBuild -DIMAGE_NAME="${ECR_REGISTRY}/${ECR_REPOSITORY}" -DTAG_COMMIT=${{ env.HAWK_IMAGE_TAG }}
 
-      - run: cd build && ls -a
+      - run: cd build/reports && pwd && ls -a
 
       - name: Copy result files for upload to GitHub Artifact
         run: |
