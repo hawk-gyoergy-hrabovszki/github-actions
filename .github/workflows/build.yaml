@@ -110,7 +110,7 @@ jobs:
         run: |
           pwd
           mkdir github-artifact
-          mv /home/runner/work/${{ inputs.component }}/${{ inputs.component }}/build/reports/allTestResults/* github-artifact
+          mv /home/runner/work/${{ inputs.component }}/${{ inputs.component }}/build/reports/allTestResults/app/* github-artifact
       - name: Upload plain test results to GitHub Artifact
         uses: actions/upload-artifact@v2
         if: always()
