@@ -104,6 +104,25 @@ jobs:
           ./gradlew build -Dskip.tests=true -x test
           ./gradlew jibDockerBuild -DIMAGE_NAME="${ECR_REGISTRY}/${ECR_REPOSITORY}" -DTAG_COMMIT=${{ env.HAWK_IMAGE_TAG }}
 
+      - run: ls -a
+
+      - name: Copy result files for upload to GitHub Artifact
+        run: |
+          pwd
+          mkdir github-artifact
+          mv /home/runner/work/${{ inputs.component }}/${{ inputs.component }}/demo/build/reports/tests/* github-artifact
+      - name: Upload plain test results to GitHub Artifact
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: test-results
+          path: github-artifact
+
+      - name: Serve Test Summary
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          - name:
       - name: Push Image
         id: push-image
         env:
@@ -115,7 +134,6 @@ jobs:
   update-overlays:
     needs: [ init, build ]
     if: ${{ needs.init.outputs.update-kustomize == 'true' }}
-    # uses: hawk-ai-aml/github-actions/.github/workflows/tag-kustomize-action.yaml@master
     runs-on: [ "self-hosted", "builder" ]
     strategy:
       # Avoid race condition issues with github
