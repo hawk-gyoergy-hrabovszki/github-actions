@@ -101,7 +101,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ fromJson(needs.init.outputs.metadata).ecr.repository }}
         run: |
-          ./gradlew build -Dskip.tests=true -x test
+          ./gradlew build -Dskip.tests=false -x test
           ./gradlew jibDockerBuild -DIMAGE_NAME="${ECR_REGISTRY}/${ECR_REPOSITORY}" -DTAG_COMMIT=${{ env.HAWK_IMAGE_TAG }}
 
       - run: cd build/reports/allTestResults/app && pwd && ls -a
@@ -110,7 +110,7 @@ jobs:
         run: |
           pwd
           mkdir github-artifact
-          mv /home/runner/work/${{ inputs.component }}/${{ inputs.component }}/build/reports/allTestResults/app/* github-artifact
+          mv /runner/_work/${{ inputs.component }}/${{ inputs.component }}/build/reports/allTestResults/app/* github-artifact
       - name: Upload plain test results to GitHub Artifact
         uses: actions/upload-artifact@v2
         if: always()
