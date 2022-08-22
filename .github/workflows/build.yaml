@@ -74,14 +74,24 @@ jobs:
         if: ${{ needs.init.outputs.skip-tests != 'true' }}
         run: ./gradlew check -isS
 
-      - uses: hawk-ai-aml/upload-s3-action@master
-        name: Upload Reports to S3
+      - name: Upload Reports to S3
+        if: always()
+        uses: hawk-ai-aml/upload-s3-action@master
         with:
           aws_key_id: ${{ secrets.AWS_DEV_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_DEV_SECRET_ACCESS_KEY }}
           aws_bucket: github-actions-static-html-2
           source_dir: app/build/reports
-          destination_dir: ${{ github.run_id }}
+          destination_dir: ${{ github.event.repository.name }}-${{ github.run_id }}
+
+      - name: Provide Link to Reports
+        if: always()
+        run: |
+          cat <<EOF | tee -a $GITHUB_STEP_SUMMARY
+
+          ### Test Reports
+          [${{ github.event.repository.name }}-${{ github.run_id }}]( https://github-actions-static-html-2.s3.amazonaws.com/${{ github.event.repository.name }}-${{ github.run_id }} )
+          EOF
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
