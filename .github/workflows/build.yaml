@@ -89,6 +89,7 @@ jobs:
           destination_dir: ${{ github.event.repository.name }}-${{ github.run_id }}
 
       - name: Provide Links to Reports
+        if: success() || failure()
         run: |
           echo "### Test Reports" | tee -a ${GITHUB_STEP_SUMMARY}
           report_url=https://github-actions-static-html-2.s3.amazonaws.com/${{ github.event.repository.name }}-${{ github.run_id }}/
