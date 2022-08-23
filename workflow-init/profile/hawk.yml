@@ -17,3 +17,75 @@ component:
           - qa
           - prod/eu-central-1
           - prod/us-east-1
+  audit-trail:
+    ecr:
+      registry: "860641649575"
+      repository: audit-trail
+      region: eu-central-1
+    kustomize:
+      path: plattform/utility/audit-trail
+      overlays:
+        dev:
+          - dev
+        test:
+          - test
+        qa:
+          - qa
+        prod:
+          - qa
+          - prod/eu-central-1
+          - prod/us-east-1
+  customer-risk-rating:
+    ecr:
+      registry: "860641649575"
+      repository: customer-risk-rating
+      region: eu-central-1
+    kustomize:
+      path: plattform/processing/customer-risk-rating
+      overlays:
+        dev:
+          - dev
+        test:
+          - test
+        qa:
+          - qa
+        prod:
+          - qa
+          - prod/eu-central-1
+          - prod/us-east-1
+  customer-risk-rating-events-sink:
+    ecr:
+      registry: "860641649575"
+      repository: customer-risk-rating-events-sink
+      region: eu-central-1
+    kustomize:
+      path: plattform/processing/customer-risk-rating-events-sink
+      overlays:
+        dev:
+          - dev
+        test:
+          - test
+        qa:
+          - qa
+        prod:
+          - qa
+          - prod/eu-central-1
+          - prod/us-east-1
+  customer-risk-rating-decision-engine:
+    ecr:
+      registry: "860641649575"
+      repository: customer-risk-rating-decision-engine
+      region: eu-central-1
+    kustomize:
+      path: plattform/processing/customer-risk-rating-decision-engine
+      overlays:
+        dev:
+          - dev
+        test:
+          - test
+        qa:
+          - qa
+        prod:
+          - qa
+          - prod/eu-central-1
+          - prod/us-east-1

@@ -1,11 +1,63 @@
 component:
   audit-trail2:
     ecr:
+      region: us-east-1
       registry: "569345997196"
       repository: hawk-audit-trail
-      region: us-east-1
     kustomize:
       path: plattform/utility/audit-trail 
+      overlays:
+        dev: []
+        test: []
+        qa: []
+        prod:
+          - nab-dev
+  audit-trail:
+    ecr:
+      region: us-east-1
+      registry: "569345997196"
+      repository: hawk-audit-trail
+    kustomize:
+      path: plattform/utility/audit-trail
+      overlays:
+        dev: []
+        test: []
+        qa: []
+        prod:
+          - nab-dev
+  customer-risk-rating:
+    ecr:
+      region: us-east-1
+      registry: "569345997196"
+      repository: hawk-customer-risk-rating
+    kustomize:
+      path: plattform/processing/customer-risk-rating
+      overlays:
+        dev: []
+        test: []
+        qa: []
+        prod:
+          - nab-dev
+  customer-risk-rating-events-sink:
+    ecr:
+      region: us-east-1
+      registry: "569345997196"
+      repository: hawk-customer-risk-rating-events-sink
+    kustomize:
+      path: plattform/processing/customer-risk-rating-events-sink
+      overlays:
+        dev: []
+        test: []
+        qa: []
+        prod:
+          - nab-dev
+  customer-risk-rating-decision-engine:
+    ecr:
+      region: us-east-1
+      registry: "569345997196"
+      repository: hawk-customer-risk-rating-decision-engine
+    kustomize:
+      path: plattform/processing/customer-risk-rating-decision-engine
       overlays:
         dev: []
         test: []
