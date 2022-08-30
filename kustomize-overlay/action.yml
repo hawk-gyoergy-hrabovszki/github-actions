@@ -65,8 +65,10 @@ runs:
       run: |
         cd ${KUSTOMIZE_PATH}/overlays/${OVERLAY}
         kustomize edit set image ${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ inputs.component-tag }}
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "github-actions@hawk.ai"
-        git add .
-        git commit -m "AUTOMATIC JENKINS COMMIT: Update ${KUSTOMIZE_PATH}/overlays/${OVERLAY} for ${ECR_REPOSITORY} to ${{ env.HAWK_IMAGE_TAG }}"
-        git push
+        if ! git diff --quiet HEAD; then
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@hawk.ai"
+          git add .
+          git commit -m "AUTOMATIC JENKINS COMMIT: Update ${KUSTOMIZE_PATH}/overlays/${OVERLAY} for ${ECR_REPOSITORY} to ${{ env.HAWK_IMAGE_TAG }}"
+          git push
+        fi
