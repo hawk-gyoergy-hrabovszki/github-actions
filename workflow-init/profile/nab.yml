@@ -42,7 +42,7 @@ component:
       path: plattform/processing/customer-risk-rating-decision-engine
       overlays: *defaultOverlays
 
-  backend/msg:
+  backend_msg: &backend_msg
     ecr:
       repository: hawkai-case-manager-backend-msg
       <<: *defaultECR
@@ -50,7 +50,7 @@ component:
       path: plattform/case-manager/backend
       overlays: *defaultOverlays
 
-  backend/rest:
+  backend_rest: &backend_rest
     ecr:
       repository: hawkai-case-manager-backend-rest
       <<: *defaultECR      
@@ -58,7 +58,7 @@ component:
       path: plattform/case-manager/backend
       overlays: *defaultOverlays
 
-  backend/grouping:
+  backend_grouping: &backend_grouping
     ecr:
       repository: backend-grouping
       <<: *defaultECR
@@ -66,10 +66,17 @@ component:
       path: plattform/case-manager/backend
       overlays: *defaultOverlays
 
-  backend/search:
+  backend_search: &backend_search
     ecr:
       repository: backend-search
       <<: *defaultECR
     kustomize:
       path: plattform/case-manager/backend
       overlays: *defaultOverlays
+
+  backend:
+    modules:
+      - *backend_msg
+      - *backend_rest
+      - *backend_grouping
+      - *backend_search
