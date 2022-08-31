@@ -25,7 +25,7 @@ on:
 
 jobs:
   init:
-    runs-on: [ "self-hosted", "builder" ]
+    runs-on: ubuntu-22.04
     outputs:
       overlays: ${{ steps.init.outputs.overlays }}
       metadata: ${{ steps.init.outputs.metadata }}
