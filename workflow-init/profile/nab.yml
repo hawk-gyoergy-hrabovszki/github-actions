@@ -80,3 +80,10 @@ component:
       - *backend_rest
       - *backend_grouping
       - *backend_search
+
+  backend2:
+    modules:
+      - *backend_msg
+      - *backend_rest
+      - *backend_grouping
+      - *backend_search
