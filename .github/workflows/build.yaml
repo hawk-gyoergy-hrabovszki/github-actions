@@ -22,8 +22,6 @@ on:
       profile:
         type: string
         required: false
-    env:
-      - GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
 
 jobs:
   init:
@@ -69,6 +67,8 @@ jobs:
 
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
+        env:
+          GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
 
       - name: Gradle Assemble
         run: ./gradlew clean assemble testClasses -isS
