@@ -1,91 +1,80 @@
+overlays: &defaultOverlays
+  dev:
+    - dev
+  test:
+    - test
+  qa:
+    - qa
+  prod:
+    - qa
+    - prod/eu-central-1
+    - prod/us-east-1
+
+ecr: &defaultECR
+  registry: "860641649575"
+  region: eu-central-1
+
 component:
   audit-trail2:
     ecr:
-      registry: "860641649575"
       repository: audit-trail
-      region: eu-central-1
+      <<: *defaultECR
     kustomize:
       path: plattform/utility/audit-trail 
-      overlays:
-        dev:
-          - dev
-        test:
-          - test
-        qa:
-          - qa
-        prod:
-          - qa
-          - prod/eu-central-1
-          - prod/us-east-1
+      overlays: *defaultOverlays
+
   audit-trail:
     ecr:
-      registry: "860641649575"
       repository: audit-trail
-      region: eu-central-1
+      <<: *defaultECR
     kustomize:
       path: plattform/utility/audit-trail
-      overlays:
-        dev:
-          - dev
-        test:
-          - test
-        qa:
-          - qa
-        prod:
-          - qa
-          - prod/eu-central-1
-          - prod/us-east-1
-  customer-risk-rating:
-    ecr:
-      registry: "860641649575"
-      repository: customer-risk-rating
-      region: eu-central-1
-    kustomize:
-      path: plattform/processing/customer-risk-rating
-      overlays:
-        dev:
-          - dev
-        test:
-          - test
-        qa:
-          - qa
-        prod:
-          - qa
-          - prod/eu-central-1
-          - prod/us-east-1
+      overlays: *defaultOverlays
+
   customer-risk-rating-events-sink:
     ecr:
-      registry: "860641649575"
       repository: customer-risk-rating-events-sink
-      region: eu-central-1
+      <<: *defaultECR
     kustomize:
       path: plattform/processing/customer-risk-rating-events-sink
-      overlays:
-        dev:
-          - dev
-        test:
-          - test
-        qa:
-          - qa
-        prod:
-          - qa
-          - prod/eu-central-1
-          - prod/us-east-1
+      overlays: *defaultOverlays
+
   customer-risk-rating-decision-engine:
     ecr:
-      registry: "860641649575"
       repository: customer-risk-rating-decision-engine
-      region: eu-central-1
+      <<: *defaultECR
     kustomize:
       path: plattform/processing/customer-risk-rating-decision-engine
-      overlays:
-        dev:
-          - dev
-        test:
-          - test
-        qa:
-          - qa
-        prod:
-          - qa
-          - prod/eu-central-1
-          - prod/us-east-1
+      overlays: *defaultOverlays
+
+  backend/msg:
+    ecr:
+      repository: hawk-hawkai-case-manager-backend-msg
+      <<: *defaultECR
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
+
+  backend/rest:
+    ecr:
+      repository: hawk-hawkai-case-manager-backend-rest
+      <<: *defaultECR      
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
+
+  backend/grouping:
+    ecr:
+      repository: hawk-backend-grouping
+      <<: *defaultECR
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
+
+  backend/search:
+    ecr:
+      repository: hawk-backend-search
+      <<: *defaultECR
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
