@@ -1,66 +1,75 @@
+overlays: &defaultOverlays
+  dev: []
+  test: []
+  qa: []
+  prod:
+    - nab-dev
+
+ecr: &defaultECR
+  registry: "569345997196"
+  region: us-east-1
+
 component:
   audit-trail2:
     ecr:
-      region: us-east-1
-      registry: "569345997196"
       repository: hawk-audit-trail
+      <<: *defaultECR
     kustomize:
       path: plattform/utility/audit-trail 
-      overlays:
-        dev: []
-        test: []
-        qa: []
-        prod:
-          - nab-dev
+      overlays: *defaultOverlays
+
   audit-trail:
     ecr:
-      region: us-east-1
-      registry: "569345997196"
       repository: hawk-audit-trail
+      <<: *defaultECR
     kustomize:
       path: plattform/utility/audit-trail
-      overlays:
-        dev: []
-        test: []
-        qa: []
-        prod:
-          - nab-dev
-  customer-risk-rating:
-    ecr:
-      region: us-east-1
-      registry: "569345997196"
-      repository: hawk-customer-risk-rating
-    kustomize:
-      path: plattform/processing/customer-risk-rating
-      overlays:
-        dev: []
-        test: []
-        qa: []
-        prod:
-          - nab-dev
+      overlays: *defaultOverlays
+
   customer-risk-rating-events-sink:
     ecr:
-      region: us-east-1
-      registry: "569345997196"
       repository: hawk-customer-risk-rating-events-sink
+      <<: *defaultECR
     kustomize:
       path: plattform/processing/customer-risk-rating-events-sink
-      overlays:
-        dev: []
-        test: []
-        qa: []
-        prod:
-          - nab-dev
+      overlays: *defaultOverlays
+
   customer-risk-rating-decision-engine:
     ecr:
-      region: us-east-1
-      registry: "569345997196"
       repository: hawk-customer-risk-rating-decision-engine
+      <<: *defaultECR
     kustomize:
       path: plattform/processing/customer-risk-rating-decision-engine
-      overlays:
-        dev: []
-        test: []
-        qa: []
-        prod:
-          - nab-dev
+      overlays: *defaultOverlays
+
+  backend/msg:
+    ecr:
+      repository: hawkai-case-manager-backend-msg
+      <<: *defaultECR
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
+
+  backend/rest:
+    ecr:
+      repository: hawkai-case-manager-backend-rest
+      <<: *defaultECR      
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
+
+  backend/grouping:
+    ecr:
+      repository: backend-grouping
+      <<: *defaultECR
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
+
+  backend/search:
+    ecr:
+      repository: backend-search
+      <<: *defaultECR
+    kustomize:
+      path: plattform/case-manager/backend
+      overlays: *defaultOverlays
