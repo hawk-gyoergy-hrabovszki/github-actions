@@ -66,15 +66,19 @@ jobs:
           cache: gradle
 
       - name: Gradle Assemble
+        uses: gradle/gradle-build-action@v2
         run: ./gradlew clean assemble testClasses -isS
 
       - name: License Report
+        uses: gradle/gradle-build-action@v2
         run: ./gradlew licenseReport
 
       - name: Check Quality
+        uses: gradle/gradle-build-action@v2
         run: ./gradlew checkQualityMain
 
       - name: Run Tests
+        uses: gradle/gradle-build-action@v2
         if: ${{ needs.init.outputs.skip-tests != 'true' }}
         run: ./gradlew check -isS
 
