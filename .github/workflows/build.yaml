@@ -62,7 +62,8 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
-          distribution: "adopt"
+          distribution: temurin
+          cache: gradle
 
       - name: Gradle Assemble
         run: ./gradlew clean assemble testClasses -isS
@@ -120,14 +121,6 @@ jobs:
         run: |
           ./gradlew build -Dskip.tests=true -x test
           ./gradlew jibDockerBuild -DIMAGE_NAME="${ECR_REGISTRY}/${ECR_REPOSITORY}" -DTAG_COMMIT=${{ env.HAWK_IMAGE_TAG }}
-
-      - uses: lacework/lw-scanner-action@v1.1.0
-        name: Scan container image for vulnerabitilies using Lacework
-        with:
-          LW_ACCOUNT_NAME: ${{ secrets.LW_ACCOUNT_NAME }}
-          LW_ACCESS_TOKEN: ${{ secrets.LW_ACCESS_TOKEN }}
-          IMAGE_NAME: techallylw/vulnerable-container
-          IMAGE_TAG: v0.0.1
 
       - name: Push Image
         id: push-image
