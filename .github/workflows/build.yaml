@@ -22,6 +22,8 @@ on:
       profile:
         type: string
         required: false
+    env:
+      - GRADLE_BUILD_ACTION_CACHE_DEBUG_ENABLED: true
 
 jobs:
   init:
