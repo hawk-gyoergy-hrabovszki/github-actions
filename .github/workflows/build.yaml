@@ -163,7 +163,7 @@ jobs:
           component-overlay: ${{ matrix.overlay }}
           component-tag: ${{ env.HAWK_IMAGE_TAG }}
           # kustomize-repo: hawk-ai-aml/kustomize2.git
-          kustomize-repo: git@bitbucket.org:hawkai/kustomize2.git
+          kustomize-repo: hawkai/kustomize2.git
           # kustomize-access-token: ${{ secrets.REPO_ACCESS_PAT }}
           kustomize-ssh-key: ${{ secrets.KUSTOMIZE_DEPLOY_PRIVATE_KEY }}
           aws-access-key-id: ${{ inputs.profile == 'nab' && secrets.AWS_NAB_DEV_ECR_ACCESS_KEY_ID || secrets.AWS_ORG_ECR_ACCESS_KEY_ID }}
