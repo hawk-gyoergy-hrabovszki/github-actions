@@ -1,0 +1,72 @@
+name: kustomize-overlay-ssh
+description: Kustomize Overlay in BitBucket
+
+inputs:
+  component-metadata:
+    description: "Component metadata"
+    required: true
+
+  component-overlay:
+    description: "Overlay to update"
+    required: true
+  
+  component-tag:
+    description: "New component tag"
+    required: true
+  
+  aws-access-key-id:
+    description: AWS Access key to access ECR repository
+    required: true
+
+  aws-secret-access-key:
+    description: AWS Secret Access Key to access ECR repository
+    required: true
+
+  kustomize-repo:
+    description: kustomize repository
+    required: true
+
+  kustomize-ssh-key:
+    description: kustomize RW access SSH key
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ inputs.aws-access-key-id }}
+        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
+        aws-region: ${{ fromJson(inputs.component-metadata).ecr.region }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+      with:
+        registries: ${{ fromJson(inputs.component-metadata).ecr.registry }}
+
+    - name: Checkout Kustomize
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.kustomize-repo }}
+        ref: master
+        ssh-key: ${{ inputs.kustomize-ssh-key }}
+
+    - name: Update kustomize Overlay
+      shell: bash
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ fromJson(inputs.component-metadata).ecr.repository }}
+        KUSTOMIZE_PATH: ${{ fromJson(inputs.component-metadata).kustomize.path }}
+        OVERLAY: ${{ inputs.component-overlay }}
+      run: |
+        cd ${KUSTOMIZE_PATH}/overlays/${OVERLAY}
+        kustomize edit set image ${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ inputs.component-tag }}
+        if ! git diff --quiet HEAD; then
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions@hawk.ai"
+          git add .
+          git commit -m "AUTOMATIC JENKINS COMMIT: Update ${KUSTOMIZE_PATH}/overlays/${OVERLAY} for ${ECR_REPOSITORY} to ${{ env.HAWK_IMAGE_TAG }}"
+          git push
+        fi
