@@ -80,6 +80,8 @@ component:
       overlays: *defaultOverlays
 
   backend:
+    ecr:
+      <<: *defaultECR
     modules:
       - *backend_msg
       - *backend_rest
@@ -87,6 +89,8 @@ component:
       - *backend_search
 
   backend2:
+    ecr:
+      <<: *defaultECR
     modules:
       - *backend_msg
       - *backend_rest
