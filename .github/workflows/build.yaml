@@ -157,7 +157,7 @@ jobs:
       - id: udpate-overlay
         name: Update kustomize overlay
         # uses: hawk-ai-aml/github-actions/kustomize-overlay@master
-        uses: hawk-ai-aml/github-actions/kustomize-overlay-ssh@master
+        uses: hawk-ai-aml/github-actions/kustomize-overlay-ssh@SRE496
         with:
           component-metadata: ${{ needs.init.outputs.metadata }}
           component-overlay: ${{ matrix.overlay }}
