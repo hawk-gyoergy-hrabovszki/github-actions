@@ -22,7 +22,7 @@ on:
       profile:
         type: string
         required: false
-      java-version:
+      javaVersion:
         type: string
         required: false
         default: 11
